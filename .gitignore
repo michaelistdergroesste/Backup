@@ -1,0 +1,9 @@
+bin/
+obj/
+*.exe
+.vs/
+bin/Debug/
+Debug/
+Debug\
+\Debug\
+\Debug

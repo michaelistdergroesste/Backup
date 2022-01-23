@@ -5,7 +5,12 @@
       "ProjectGuid": "9100fb6d-a1a3-4470-8d68-c26b427dff1b",
       "DisplayName": "Backup",
       "ColorIndex": 0
+    },
+    "25e3bfd0-f5db-4088-90ce-e14f242c0904": {
+      "ProjectGuid": "25e3bfd0-f5db-4088-90ce-e14f242c0904",
+      "DisplayName": "BackupWork",
+      "ColorIndex": 1
     }
   },
-  "NextColorIndex": 1
+  "NextColorIndex": 2
 }
