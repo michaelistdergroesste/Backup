@@ -5,8 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Backup"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    Title="MainWindow" Height="600" Width="637.6" MinHeight="187" MaxHeight="600" MaxWidth="800" MinWidth="470" Closing="Window_Closing">
+    <Grid x:Name="GridMain" Margin="4,4,4,14.8">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FFDFDFDF" Offset="0"/>
+                <GradientStop Color="White" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid x:Name="GridLabel" Margin="4,10,4,0" VerticalAlignment="Top" Height="78" >
+            <Label  x:Name="labelTitle" Content="{Binding ActualHandle}" HorizontalAlignment="Left" Margin="22,10,0,0" VerticalAlignment="Top"/>
+            <Grid HorizontalAlignment="Left" Height="41" Margin="292,27,0,0" VerticalAlignment="Top" Width="89"/>
+            <Button x:Name="buttonStart" Content="Start" HorizontalAlignment="Right" Margin="0,27,10,0" VerticalAlignment="Top" Width="75" Click="buttonStart_Click"/>
+            <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="20" Margin="233,27,0,0" VerticalAlignment="Top" Width="163" Value="55"/>
+        </Grid>
+        <Grid x:Name="GridBackupFolder" Margin="4,67,4.2,0" Height="84" VerticalAlignment="Top">
+            <Label x:Name="labelNumberOfBackups" Content="Anzahl der Sicherungen" Margin="4,45,114.8,0" />
+            <Border x:Name="BorderSettings" >
+                <ComboBox x:Name="ComboInterval_Copy" HorizontalAlignment="Right" Height="25" Margin="0,4,20,0" VerticalAlignment="Top" Width="116" FontSize="12" SelectedIndex="{Binding Probier, Mode = TwoWay}" MouseDown="ComboInterval_Copy_MouseDown">
+                    <ComboBoxItem IsEnabled="False" />
+                    <ComboBoxItem Content="einmal am Tag" />
+                    <ComboBoxItem Content="alle zwei Tage" />
+                    <ComboBoxItem Content="alle drei Tage" />
+                    <ComboBoxItem IsEnabled="False" />
+                    <ComboBoxItem Content="alle 5 Tage" />
+                    <ComboBoxItem IsEnabled="False" />
+                    <ComboBoxItem Content="einmal die Woche" />
+                </ComboBox>
+            </Border>
+            <Grid HorizontalAlignment="Left" Height="33" Margin="150,45,0,4" VerticalAlignment="Bottom" Width="61" >
+                <Button Content="▲" FontSize="8" Margin="0,2,4,0" Height="12" Width="12" HorizontalAlignment="Right" Tag ="1" VerticalAlignment="Top" Click="Button_Click"  />
+                <Button Content="▼" FontSize="8" Margin="0,0,4,6" Height="12" Width="12" HorizontalAlignment="Right" Tag ="-1" VerticalAlignment="Bottom" Click="Button_Click"  />
+                <TextBox Height="24" Margin="3,2,0,0" TextWrapping="Wrap" Text="{Binding NumberOfGenerations, Mode = TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40"/>
+            </Grid>
+
+
+
+        </Grid>
+        <Grid x:Name="GridFolder" Margin="4,176,4,4" Grid.Row="2" />
+
+
+
 
     </Grid>
 </Window>
