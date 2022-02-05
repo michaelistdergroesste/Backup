@@ -15,7 +15,17 @@
       "ProjectGuid": "850de6d5-7a38-4034-880d-ee16121e5009",
       "DisplayName": "BackupLib",
       "ColorIndex": 2
+    },
+    "be10ac95-4b14-40bc-b439-e7cb788a593c": {
+      "ProjectGuid": "be10ac95-4b14-40bc-b439-e7cb788a593c",
+      "DisplayName": "BackupLib",
+      "ColorIndex": 3
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
     }
   },
-  "NextColorIndex": 3
+  "NextColorIndex": 4
 }
