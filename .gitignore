@@ -1,6 +1,8 @@
 bin/
 obj/
 *.exe
+*.v1
+*.v2
 .vs/
 bin/Debug/
 Debug/
