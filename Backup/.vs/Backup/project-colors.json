@@ -30,7 +30,12 @@
       "ProjectGuid": "7d78340f-423f-4d43-8401-bf2f591c37e8",
       "DisplayName": "BackupHmi",
       "ColorIndex": 4
+    },
+    "688d968c-62ef-44c5-8983-c90d963cb8b5": {
+      "ProjectGuid": "688d968c-62ef-44c5-8983-c90d963cb8b5",
+      "DisplayName": "BackupLib",
+      "ColorIndex": 5
     }
   },
-  "NextColorIndex": 5
+  "NextColorIndex": 6
 }

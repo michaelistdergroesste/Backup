@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace BackupLib
 {
-    internal class Common
+    public class Common
     {
+        /// <summary>
+        /// Die maximale Anzahl der Pfade, die gesichert wird. Dies entspricht der Anzahl der Pfade auf dem Main Screen
+        /// </summary>
+        protected int pathNumber;
     }
 }
