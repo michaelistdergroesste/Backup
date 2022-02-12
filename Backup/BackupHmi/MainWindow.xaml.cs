@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using BackupLib;
+using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using BackupLib;
 using System.Windows.Forms;
+using System.Windows.Input;
+
 
 namespace BackupHmi
 {
@@ -166,9 +157,11 @@ namespace BackupHmi
 
         System.Windows.Controls.Label CreateLabel(int tag)
         {
-            var label = new System.Windows.Controls.Label();
-            label.Tag = tag;
-            label.Content = "Verzeichnis";
+            var label = new System.Windows.Controls.Label
+            {
+                Tag = tag,
+                Content = "Verzeichnis"
+            };
 
             return label;
         }
@@ -227,14 +220,17 @@ namespace BackupHmi
             bool isSelected = false;
             isSelected = iniData.SourcePath[number].Length > 0;
 
-            var button = new System.Windows.Controls.Button();
-            button.Tag = tag;
-            button.Content = "X";
-            button.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-            button.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-            button.IsEnabled = true;
-            button.Width = 29;
-            button.Margin = new Thickness(34, top, 4, 0);
+            var button = new System.Windows.Controls.Button
+            {
+                Tag = tag,
+                Content = "X",
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+                //HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+                IsEnabled = true,
+                Width = 29,
+                Margin = new Thickness(34, top, 4, 0)
+            };
             button.Click += new System.Windows.RoutedEventHandler(ButtonDeleteFolder_Click);
             string pathName = "IsSomeInSourcePath" + number.ToString();
             var binding = new System.Windows.Data.Binding(pathName);
