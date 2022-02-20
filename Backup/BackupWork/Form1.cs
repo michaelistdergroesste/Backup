@@ -178,5 +178,10 @@ namespace BackupWork
         {
             StartBackup();
         }
+
+        private void notifyIcon1_MouseDoubleClick_1(object sender, MouseEventArgs e)
+        {
+
+        }
     }
 }
