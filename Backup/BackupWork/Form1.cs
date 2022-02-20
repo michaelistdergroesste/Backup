@@ -21,6 +21,11 @@ namespace BackupWork
 
         string applicationPath;
 
+        /// <summary>
+        /// true wenn das Backup läuft.
+        /// </summary>
+        bool doJob;
+
         public Form1()
         {
             InitializeComponent();
@@ -31,9 +36,8 @@ namespace BackupWork
             newThread = new Thread(work);
             backupThread = new Thread(backup);
             newThread.Start();
+            backupThread.Start();
 
-
-            Backup.Visible = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -47,8 +51,8 @@ namespace BackupWork
             {
                 this.ShowInTaskbar = false;
                 ShowIcon = false;
-                Backup.Visible = true;
-                Backup.ShowBalloonTip(1000);
+                //Backup.Visible = true;
+                //Backup.ShowBalloonTip(1000);
             }
         }
 
@@ -64,17 +68,27 @@ namespace BackupWork
 
         private void backup()
         {
-            IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
-            fileHandle.Load();
-            BackupFile backupFile = new BackupFile(iniData.destPath);
-
-            for (int i = 0; i < iniData.PathNumber; i++)
+            while (true)
             {
-                if (iniData.SourcePath[0].Length > 10)
+                if (doJob)
                 {
-                    backupFile.ZipFolder(iniData.SourcePath[i]);
+             
+
+                    IniData iniData = new IniData();
+                    FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
+                    fileHandle.Load();
+                    BackupFile backupFile = new BackupFile(iniData.destPath);
+
+                    for (int i = 0; i < iniData.PathNumber; i++)
+                    {
+                        if (iniData.SourcePath[0].Length > 10)
+                        {
+                            backupFile.ZipFolder(iniData.SourcePath[i]);
+                        }
+                    }
+                    doJob = false;
                 }
+                Thread.Sleep(1000);
             }
         }
 
@@ -100,22 +114,12 @@ namespace BackupWork
 
         private void StartBackup()
         {
-            Backup.BalloonTipText = "Backup wurde gestartet";
-            Backup.BalloonTipTitle = "Backup";
-            Backup.ShowBalloonTip(1000);
+            //Backup.BalloonTipText = "Backup wurde gestartet";
+            //Backup.BalloonTipTitle = "Backup";
+            //Backup.ShowBalloonTip(1000);
 
-            var state = backupThread.ThreadState;
-            var alive = backupThread.IsAlive;
-
-            try
-            {
-                backupThread.Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-
+            doJob = true;
+           
             WriteLastStoreTime();
         }
 
@@ -166,9 +170,13 @@ namespace BackupWork
             return (localDate.Ticks / 10000000);
         }
 
+
+
         #endregion // laden und Speichern der Zeit des letzten Backups
 
-
-
+        private void button1_Click(object sender, EventArgs e)
+        {
+            StartBackup();
+        }
     }
 }

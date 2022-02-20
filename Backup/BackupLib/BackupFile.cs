@@ -161,7 +161,6 @@ namespace BackupLib
             if (source.Length > 5)
             {
 
-
                 try
                 {
                     string[] dirs;
@@ -179,9 +178,6 @@ namespace BackupLib
                 }
                 catch (Exception ex)
                 { }
-
-
-
 
             }
 
