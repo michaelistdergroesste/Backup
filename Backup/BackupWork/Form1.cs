@@ -1,10 +1,20 @@
 using BackupLib;
+using System.Diagnostics;
 using System.Reflection;
+using System.Windows.Forms;
+
+
 
 namespace BackupWork
 {
+
+
     public partial class Form1 : Form
     {
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.TypeConverter(typeof(System.ComponentModel.ReferenceConverter))]
+
+
         /// <summary>
         /// Zeit des letzten Speicherns in Sekunden
         /// </summary>
@@ -17,32 +27,33 @@ namespace BackupWork
         int progressBar;
 
         Thread newThread;
-        Thread backupThread;
+
+        DoWork doWork;
 
         string applicationPath;
 
-        /// <summary>
-        /// true wenn das Backup läuft.
-        /// </summary>
-        bool doJob;
+
 
         public Form1()
         {
             InitializeComponent();
 
 
+            doWork = new DoWork();
+
+
             applicationPath = GetApplicationsPath();
 
             newThread = new Thread(work);
-            backupThread = new Thread(backup);
             newThread.Start();
-            backupThread.Start();
+
 
         }
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Hide();
+            //this.Hide();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -66,30 +77,10 @@ namespace BackupWork
             throw new NotImplementedException();
         }
 
-        private void backup()
+        private void Backup()
         {
-            while (true)
-            {
-                if (doJob)
-                {
-             
-
-                    IniData iniData = new IniData();
-                    FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
-                    fileHandle.Load();
-                    BackupFile backupFile = new BackupFile(iniData.destPath);
-
-                    for (int i = 0; i < iniData.PathNumber; i++)
-                    {
-                        if (iniData.SourcePath[0].Length > 10)
-                        {
-                            backupFile.ZipFolder(iniData.SourcePath[i]);
-                        }
-                    }
-                    doJob = false;
-                }
-                Thread.Sleep(1000);
-            }
+            doWork.DoJob = true;
+            WriteLastStoreTime();
         }
 
         private void work()
@@ -107,21 +98,14 @@ namespace BackupWork
                 string text = "diff = " + diff.ToString();
 
                 if (diff > this.interval)
-                    StartBackup();
+                {
+                    Backup();
+                }
+                
 
             }
         }
 
-        private void StartBackup()
-        {
-            //Backup.BalloonTipText = "Backup wurde gestartet";
-            //Backup.BalloonTipTitle = "Backup";
-            //Backup.ShowBalloonTip(1000);
-
-            doJob = true;
-           
-            WriteLastStoreTime();
-        }
 
         private void GetInterval()
         {
@@ -176,11 +160,12 @@ namespace BackupWork
 
         private void button1_Click(object sender, EventArgs e)
         {
-            StartBackup();
+            Backup();
         }
 
-        private void notifyIcon1_MouseDoubleClick_1(object sender, MouseEventArgs e)
+        private void notifyIcon1_MouseClick_1(object sender, MouseEventArgs e)
         {
+            System.Diagnostics.Process.Start("BackupHmi.exe");
 
         }
     }

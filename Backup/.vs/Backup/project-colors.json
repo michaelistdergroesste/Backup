@@ -35,7 +35,12 @@
       "ProjectGuid": "688d968c-62ef-44c5-8983-c90d963cb8b5",
       "DisplayName": "BackupLib",
       "ColorIndex": 5
+    },
+    "07fecc91-979f-4d22-8e79-290a8cfe60bd": {
+      "ProjectGuid": "07fecc91-979f-4d22-8e79-290a8cfe60bd",
+      "DisplayName": "BackupBackground",
+      "ColorIndex": 6
     }
   },
-  "NextColorIndex": 6
+  "NextColorIndex": 7
 }
