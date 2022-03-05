@@ -9,8 +9,9 @@ namespace BackupLib
 {
     public class DoWork
     {
-        static int noBackupThread = 8;
-        private static Thread?[]? backupThread = new Thread?[noBackupThread];
+        static int noBackupThread = 2;
+        private static Thread?[]? backupThread;
+        private static bool[] doSingleJob;
         /// <summary>
         /// true wenn das Backup läuft.
         /// </summary>
@@ -20,16 +21,31 @@ namespace BackupLib
         /// </summary>
         public bool DoJob
         {
-            get { return doJob; }   
-            set { doJob = value; }
+            get 
+            {
+
+                doJob = false;
+                for (int i = 0; i < noBackupThread; i++)
+                    doJob &= doSingleJob[i];               
+                return doJob; 
+            }   
+            set 
+            { 
+                doJob = value;
+                for (int i = 0; i < noBackupThread; i++)
+                    doSingleJob[i] = doJob;
+            }
         }
 
         public DoWork()
         {
+            backupThread = new Thread?[noBackupThread];
             for (int i = 0; i < noBackupThread; i++)
             {
                 backupThread[i] = new Thread(backup);
                 backupThread[i].Start(i);
+                doSingleJob = new bool[noBackupThread];
+                doSingleJob[i] = false;
 
             }
 
@@ -39,7 +55,8 @@ namespace BackupLib
         {
             while (true)
             {
-                if (doJob)
+                int number = (int)thradNumber;
+                if (doSingleJob[number])
                 {
 
 
@@ -48,15 +65,17 @@ namespace BackupLib
                     fileHandle.Load();
                     BackupFile backupFile = new BackupFile(iniData.destPath);
 
-                    //int i = iniData.PathNumber;
-                    int i = (int)thradNumber;
-                    string sourcePath = iniData.SourcePath[i];
-                    if (sourcePath.Length > 10)
+                    
+                    for (int i = number; i < iniData.PathNumber; i += noBackupThread)
                     {
-                        backupFile.ZipFolder(sourcePath);
+                        if (iniData.SourcePath[i].Length > 10)
+                        {
+                            iniData.ActualHandle = "backup " + iniData.SourcePath[i];
+                            backupFile.ZipFolder(iniData.SourcePath[i]);
+                        }
                     }
-
-                    doJob = false;
+                    doSingleJob[number] = false;
+                    
                 }
                 Thread.Sleep(1000);
             }

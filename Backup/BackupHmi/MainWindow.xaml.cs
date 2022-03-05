@@ -20,7 +20,7 @@ namespace BackupHmi
         const int destinationTag = -1;
 
 
-        const int borderRight = 90;
+        const int borderRight = 130;
         const int borderHight = 34;
         /// <summary>
         /// Die Texte im Mainpanel die vor den Quell - Pfaden stehen
@@ -41,14 +41,14 @@ namespace BackupHmi
         public IniData iniData { get; set; }
 
         /// <summary>
+        /// True wenn etwas geaendert wurde. Dann wird gefragt, ob gespeichert werden soll.
+        /// </summary>
+        bool changeSome = false;
+
+        /// <summary>
         /// Dateihandler zum Speichern und lesen des INI - Files
         /// </summary>
         FileHandle fileHandle;
-
-        /// <summary>
-        /// True, wenn jemand auf einen der Knoepfe gedrückt hat. In diesem Fall wird beim Beenden gefragt, ob die Önderungen gespeiuchert werden sollen.
-        /// </summary>
-        bool changeSome = false;
 
 
         Thread newThread;
@@ -81,6 +81,8 @@ namespace BackupHmi
             progressBar.Value = 0;
             w = new ProcessTimer();
             w.fertig += new ProcessTimer.berechnungFertig(DoSome);
+
+            changeSome = false;
 
 
         }
@@ -202,7 +204,7 @@ namespace BackupHmi
             button.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
             button.VerticalAlignment = System.Windows.VerticalAlignment.Top;
             button.Width = 29;
-            button.Margin = new Thickness(4, top, 44, 0);
+            button.Margin = new Thickness(4, top, borderRight - 46, 0);
             button.Click += new System.Windows.RoutedEventHandler(ButtonCreateFolder_Click);
 
             return button;
@@ -229,7 +231,7 @@ namespace BackupHmi
                 VerticalAlignment = VerticalAlignment.Top,
                 IsEnabled = true,
                 Width = 29,
-                Margin = new Thickness(34, top, 4, 0)
+                Margin = new Thickness(34, top, borderRight - 86, 0)
             };
             button.Click += new System.Windows.RoutedEventHandler(ButtonDeleteFolder_Click);
             string pathName = "IsSomeInSourcePath" + number.ToString();
@@ -426,21 +428,8 @@ namespace BackupHmi
             }
         }
 
-        private void ComboInterval_Copy_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void ComboInterval_Copy_GotFocus(object sender, RoutedEventArgs e)
         {
-            // Merken, dass auf dem Knopf gedrückt hat.
-            changeSome = true;
-        }
-
-        private void ComboInterval_Copy_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            // Merken, dass auf dem Knopf gedrückt hat.
-            changeSome = true;
-        }
-
-        private void ComboInterval_Copy_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            // Merken, dass auf dem Knopf gedrückt hat.
             changeSome = true;
         }
     }
