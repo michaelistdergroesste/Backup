@@ -14,8 +14,9 @@ namespace BackupWork
             ApplicationConfiguration.Initialize();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
-            //Application.Run();
+            Form1 frm = new Form1();   //einfach nur Form1 initalisieren und dann
+            //Application.Run(new Form1());
+            Application.Run();
         }
     }
 }

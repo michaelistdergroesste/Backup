@@ -50,10 +50,16 @@ namespace BackupWork
 
         }
 
-
-        private void Form1_Load(object sender, EventArgs e)
+        //remove the entire system menu:
+        private const int WS_SYSMENU = 0x80000;
+        protected override CreateParams CreateParams
         {
-            //this.Hide();
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.Style &= ~WS_SYSMENU;
+                return cp;
+            }
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -165,8 +171,20 @@ namespace BackupWork
 
         private void notifyIcon1_MouseClick_1(object sender, MouseEventArgs e)
         {
-            System.Diagnostics.Process.Start("BackupHmi.exe");
+            if (e.Button == MouseButtons.Left)
+                System.Diagnostics.Process.Start("BackupHmi.exe");
+            if (e.Button == MouseButtons.Right)
+                this.Show();
+        }
 
+        private void buttonHide_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            this.Show();
         }
     }
 }
