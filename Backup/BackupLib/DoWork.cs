@@ -9,76 +9,94 @@ namespace BackupLib
 {
     public class DoWork
     {
-        static int noBackupThread = 2;
-        private static Thread?[]? backupThread;
-        private static bool[] doSingleJob;
+        private static Thread backupThread;
+        IniData iniData;
+        /// <summary>
+        /// Die Anzahl der erledigten Jobs
+        /// </summary>
+        private int jobCounter;
         /// <summary>
         /// true wenn das Backup läuft.
         /// </summary>
         static bool doJob;
         /// <summary>
-        /// true wenn das Backup läuft.
+        /// alter Prozentwert um zu erkennen, dass sich der Prozentwert geaendert hat.
         /// </summary>
+        int oldPercent;
+
+        // declaring an event using built-in EventHandler
+        public event EventHandler Change;
+
         public bool DoJob
         {
-            get 
-            {
-
-                doJob = false;
-                for (int i = 0; i < noBackupThread; i++)
-                    doJob &= doSingleJob[i];               
-                return doJob; 
-            }   
-            set 
-            { 
-                doJob = value;
-                for (int i = 0; i < noBackupThread; i++)
-                    doSingleJob[i] = doJob;
-            }
+            get { return doJob; }   
+            set { doJob = value; }
         }
+
+        
 
         public DoWork()
         {
-            backupThread = new Thread?[noBackupThread];
-            for (int i = 0; i < noBackupThread; i++)
-            {
-                backupThread[i] = new Thread(backup);
-                backupThread[i].Start(i);
-                doSingleJob = new bool[noBackupThread];
-                doSingleJob[i] = false;
-
-            }
-
+            backupThread = new Thread(backup);
+            backupThread.Start();
         }
 
-        private void backup(object thradNumber)
+        public int GetPercent()
+        {
+            int retVal = 0;
+
+            if (iniData == null)
+                retVal = 0;
+            else if (iniData.PathNumber == 0)
+                retVal = 0;
+            else if (jobCounter == iniData.PathNumber)
+                retVal = 100;
+            else 
+            {
+                double dRetVal = ((double)jobCounter + 1.0) / (double)iniData.PathNumber * 100.0;
+                retVal = (int)dRetVal;                
+            }
+            return retVal;
+        }
+        /// <summary>
+        /// Der Tread, der das Backup macht.
+        /// </summary>
+        /// <param name="thradNumber">Eindeutige Nummer des Threads</param>
+        private void backup()
         {
             while (true)
             {
-                int number = (int)thradNumber;
-                if (doSingleJob[number])
+                try
                 {
-
-
-                    IniData iniData = new IniData();
-                    FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
-                    fileHandle.Load();
-                    BackupFile backupFile = new BackupFile(iniData.destPath);
-
-                    
-                    for (int i = number; i < iniData.PathNumber; i += noBackupThread)
+                    if (doJob)
                     {
-                        if (iniData.SourcePath[i].Length > 10)
+                        this.iniData = new IniData();
+                        FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
+                        fileHandle.Load();
+                        BackupFile backupFile = new BackupFile(iniData.destPath);
+
+                        for (jobCounter = 0; jobCounter < iniData.PathNumber; jobCounter++)
                         {
-                            iniData.ActualHandle = "backup " + iniData.SourcePath[i];
-                            backupFile.ZipFolder(iniData.SourcePath[i]);
+                            OnChange(EventArgs.Empty); //No event data
+                            iniData.ActualHandle = "backup " + iniData.SourcePath[jobCounter];
+                            backupFile.ZipFolder(iniData.SourcePath[jobCounter]);
                         }
+                        doJob = false;
+                        OnChange(EventArgs.Empty); //No event data
+
                     }
-                    doSingleJob[number] = false;
-                    
+                }
+                catch 
+                {
+                    doJob = false;
                 }
                 Thread.Sleep(1000);
             }
+        }
+
+        private void OnChange(EventArgs e)
+        {
+            Change?.Invoke(this, e);
         }
     }
 }

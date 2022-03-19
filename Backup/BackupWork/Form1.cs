@@ -8,6 +8,7 @@ using System.Windows.Forms;
 namespace BackupWork
 {
 
+    public delegate void emptyFunction();
 
     public partial class Form1 : Form
     {
@@ -26,7 +27,8 @@ namespace BackupWork
 
         int progressBar;
 
-        Thread newThread;
+        Thread workthread;
+        Thread barThread;
 
         DoWork doWork;
 
@@ -44,11 +46,21 @@ namespace BackupWork
 
             applicationPath = GetApplicationsPath();
 
-            newThread = new Thread(work);
-            newThread.Start();
+            workthread = new Thread(new ThreadStart(work));
+            //barThread = new Thread(new ThreadStart(updateProcessBar));
+            doWork.Change += doWorkChange; // register with an event
+            workthread.Start();
+            //barThread.Start();
 
 
         }
+
+        private void doWorkChange(object? sender, EventArgs e)
+        {
+            updateProcessBar();
+        }
+
+
 
         //remove the entire system menu:
         private const int WS_SYSMENU = 0x80000;
@@ -73,22 +85,20 @@ namespace BackupWork
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
+ 
+        /// <summary>
+        /// Mache das Backup
+        /// </summary>
         private void Backup()
         {
             doWork.DoJob = true;
             WriteLastStoreTime();
+
         }
 
+        /// <summary>
+        /// regelmaessig wird hier geprueft, ob ein neues Backup gemacht werden muss.
+        /// </summary>
         private void work()
         {
 
@@ -112,7 +122,39 @@ namespace BackupWork
             }
         }
 
+        /// <summary>
+        /// Thread um den Prozessbaklken upzudaten.
+        /// </summary>
+        private void updateProcessBar()
+        {
+            //while (true)
+            {
+                try
+                {
+                    int percent = doWork.GetPercent();
 
+                    // siehe https://www.computerbase.de/forum/threads/ungueltiger-threaduebergreifender-vorgang.1107200/
+                    label2.Invoke(new emptyFunction(delegate ()
+                    {
+                        label2.Text = percent.ToString();
+                    }));
+                    progressBarSuccess.Invoke(new emptyFunction(delegate ()
+                    {
+                        progressBarSuccess.Value = percent;
+                    }));
+                }
+                catch 
+                {
+                    //Thread.Sleep(300);
+                }
+                //Thread.Sleep(300);
+
+            }
+        }
+
+        /// <summary>
+        /// Abfragen, wie oft das Backup gemacht werden muss
+        /// </summary>
         private void GetInterval()
         {
             IniData iniData = new IniData();
@@ -164,6 +206,7 @@ namespace BackupWork
 
         #endregion // laden und Speichern der Zeit des letzten Backups
 
+        #region Klicks auf der Benutzeroberflaeche
         private void button1_Click(object sender, EventArgs e)
         {
             Backup();
@@ -186,5 +229,8 @@ namespace BackupWork
         {
             this.Show();
         }
+        #endregion
+
+
     }
 }
