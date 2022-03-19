@@ -28,7 +28,6 @@ namespace BackupWork
         int progressBar;
 
         Thread workthread;
-        Thread barThread;
 
         DoWork doWork;
 
@@ -47,11 +46,8 @@ namespace BackupWork
             applicationPath = GetApplicationsPath();
 
             workthread = new Thread(new ThreadStart(work));
-            //barThread = new Thread(new ThreadStart(updateProcessBar));
             doWork.Change += doWorkChange; // register with an event
             workthread.Start();
-            //barThread.Start();
-
 
         }
 

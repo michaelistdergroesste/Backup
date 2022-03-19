@@ -50,10 +50,7 @@ namespace BackupHmi
         /// </summary>
         FileHandle fileHandle;
 
-
-        Thread newThread;
-        Thread[] newThread2;
-        ProcessTimer w;
+        DoWork doWork;
 
 
         public MainWindow()
@@ -74,33 +71,35 @@ namespace BackupHmi
             CreateBorderSettings();
 
 
+
+
             this.DataContext = iniData;
 
             iniData.ActualHandle = "Sichern von Daten ";
 
-            progressBar.Value = 0;
-            w = new ProcessTimer();
-            w.fertig += new ProcessTimer.berechnungFertig(DoSome);
+            doWork = new DoWork();
+            doWork.Change += doWorkChange; // register with an event
+
+            // initialisiere die Prozess bar.
+            IncreaseProcessBar();
 
             changeSome = false;
 
 
         }
 
-        private void IncreaseProcessBar()
-        {
-            progressBar.Value += 20;
-            if (progressBar.Value >= 100)
-                buttonStart.IsEnabled = true;
-        }
 
-        private void DoSome(int e)
+        private void doWorkChange(object? sender, EventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(IncreaseProcessBar));
         }
 
 
-
+        private void IncreaseProcessBar()
+        {
+            int percent = doWork.GetPercent();
+            progressBarSuccess.Value = percent;
+        }
 
         #region crerateUserElements
 
@@ -400,33 +399,22 @@ namespace BackupHmi
 
         private void buttonStart_Click(object sender, RoutedEventArgs e)
         {
-            buttonStart.IsEnabled = false;
-            progressBar.Value = 0;
-            for (int i = 0; i < iniData.PathNumber; i++)
-                newThread = new Thread(w.Backup);
-            newThread.Start();
+            Backup();
 
         }
-
-
-
         private void Backup()
         {
-            IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
-            fileHandle.Load();
-            BackupFile backupFile = new BackupFile(iniData.destPath);
-
-            for (int i = 0; i < iniData.PathNumber; i++)
-            {
-                if (iniData.SourcePath[i].Length > 10)
-                {
-                    iniData.ActualHandle = "backup " + iniData.SourcePath[i];
-                    backupFile.ZipFolder(iniData.SourcePath[i]);
-                }
-
-            }
+            doWork.DoJob = true;
+            //WriteLastStoreTime();
         }
+
+        //private void WriteLastStoreTime()
+        //{
+        //    long timeInSecounds = GetCurrentTime();
+        //    string fileName = OwnIniFileName();
+        //    IniFile ownIniFile = new IniFile(fileName);
+        //    ownIniFile.IniWriteValue("LastStore", timeInSecounds.ToString());
+        //}
 
         private void ComboInterval_Copy_GotFocus(object sender, RoutedEventArgs e)
         {
