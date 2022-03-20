@@ -127,11 +127,6 @@ namespace BackupLib
             set
             {
                 interval = value;
-                // mindestens einmal die Stunde
-                //if (interval < 3600) interval = 10;
-                //// maximal alle zwei Wochen
-                //if (interval > 1209600) interval = 1209600;
-                //OnPropertyChanged(nameof(interval));
                 OnPropertyChanged(nameof(Interval));
             }
         }

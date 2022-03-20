@@ -68,5 +68,16 @@ namespace BackupLib
             iniFile.IniReadValue("Probier", out number);
             iniData.Probier = number;
         }
+
+        /// <summary>
+        /// Schreibe die aktuelle Zeit um zu wissen, wann das letze Backup gemacht wurde.
+        /// </summary>
+        internal void WriteLastStoreTime()
+        {
+            DateTime localDate = DateTime.Now;
+            long timeInSecounds = localDate.Ticks / 10000000;
+            iniFile.IniWriteValue("LastStore", timeInSecounds.ToString());
+
+        }
     }
 }

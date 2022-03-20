@@ -53,7 +53,7 @@ namespace BackupWork
 
         private void doWorkChange(object? sender, EventArgs e)
         {
-            updateProcessBar();
+            UpdateProcessBar();
         }
 
 
@@ -88,8 +88,9 @@ namespace BackupWork
         private void Backup()
         {
             doWork.DoJob = true;
-            WriteLastStoreTime();
-
+            notifyIcon.BalloonTipText = "Backup wurde gestartet";
+            notifyIcon.BalloonTipTitle = "Backup";
+            notifyIcon.ShowBalloonTip(1000);
         }
 
         /// <summary>
@@ -121,31 +122,27 @@ namespace BackupWork
         /// <summary>
         /// Thread um den Prozessbaklken upzudaten.
         /// </summary>
-        private void updateProcessBar()
+        private void UpdateProcessBar()
         {
-            //while (true)
-            {
-                try
-                {
-                    int percent = doWork.GetPercent();
 
-                    // siehe https://www.computerbase.de/forum/threads/ungueltiger-threaduebergreifender-vorgang.1107200/
-                    label2.Invoke(new emptyFunction(delegate ()
-                    {
-                        label2.Text = percent.ToString();
-                    }));
-                    progressBarSuccess.Invoke(new emptyFunction(delegate ()
-                    {
-                        progressBarSuccess.Value = percent;
-                    }));
-                }
-                catch 
+
+            try
+            {
+                int percent = doWork.GetPercent();
+
+                this.Invoke(new emptyFunction(delegate ()
                 {
-                    //Thread.Sleep(300);
-                }
-                //Thread.Sleep(300);
+                    label2.Text = percent.ToString();
+                    progressBarSuccess.Value = percent;
+                    button1.Enabled = ((percent <= 0) || (percent >= 100));
+                }));
+                // siehe https://www.computerbase.de/forum/threads/ungueltiger-threaduebergreifender-vorgang.1107200/
+            }
+            catch 
+            {
 
             }
+
         }
 
         /// <summary>
@@ -162,13 +159,6 @@ namespace BackupWork
 
 
         #region laden und Speichern der Zeit des letzten Backups
-        private void WriteLastStoreTime()
-        {
-            long timeInSecounds = GetCurrentTime();
-            string fileName = OwnIniFileName();
-            IniFile ownIniFile = new IniFile(fileName);
-            ownIniFile.IniWriteValue("LastStore", timeInSecounds.ToString());
-        }
 
         private void LoadLastStoreTime()
         {

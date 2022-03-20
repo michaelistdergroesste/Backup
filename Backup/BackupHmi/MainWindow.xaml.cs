@@ -81,7 +81,7 @@ namespace BackupHmi
             doWork.Change += doWorkChange; // register with an event
 
             // initialisiere die Prozess bar.
-            IncreaseProcessBar();
+            UpdateProcessBar();
 
             changeSome = false;
 
@@ -91,11 +91,11 @@ namespace BackupHmi
 
         private void doWorkChange(object? sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(IncreaseProcessBar));
+            Dispatcher.BeginInvoke(new Action(UpdateProcessBar));
         }
 
 
-        private void IncreaseProcessBar()
+        private void UpdateProcessBar()
         {
             int percent = doWork.GetPercent();
             progressBarSuccess.Value = percent;
@@ -405,16 +405,8 @@ namespace BackupHmi
         private void Backup()
         {
             doWork.DoJob = true;
-            //WriteLastStoreTime();
         }
 
-        //private void WriteLastStoreTime()
-        //{
-        //    long timeInSecounds = GetCurrentTime();
-        //    string fileName = OwnIniFileName();
-        //    IniFile ownIniFile = new IniFile(fileName);
-        //    ownIniFile.IniWriteValue("LastStore", timeInSecounds.ToString());
-        //}
 
         private void ComboInterval_Copy_GotFocus(object sender, RoutedEventArgs e)
         {

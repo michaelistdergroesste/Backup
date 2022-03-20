@@ -73,6 +73,8 @@ namespace BackupLib
                         this.iniData = new IniData();
                         FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
                         fileHandle.Load();
+                        fileHandle.WriteLastStoreTime();
+
                         BackupFile backupFile = new BackupFile(iniData.destPath);
 
                         for (jobCounter = 0; jobCounter < iniData.PathNumber; jobCounter++)
@@ -83,7 +85,7 @@ namespace BackupLib
                         }
                         doJob = false;
                         OnChange(EventArgs.Empty); //No event data
-
+                        
                     }
                 }
                 catch 
