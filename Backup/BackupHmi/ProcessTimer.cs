@@ -30,7 +30,7 @@ namespace BackupHmi
             try
             {
                 IniData iniData = new IniData();
-                FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
+                FileHandle fileHandle = new FileHandle(iniData);
                 fileHandle.Load();
                 BackupFile backupFile = new BackupFile(iniData.destPath);
 
@@ -54,7 +54,7 @@ namespace BackupHmi
         public void Backup2(object str)
         {
             IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
+            FileHandle fileHandle = new FileHandle(iniData);
             fileHandle.Load();
             BackupFile backupFile = new BackupFile(iniData.destPath);
             string sourthPath = (string)str;

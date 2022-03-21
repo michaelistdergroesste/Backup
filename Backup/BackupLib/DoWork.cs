@@ -71,7 +71,7 @@ namespace BackupLib
                     if (doJob)
                     {
                         this.iniData = new IniData();
-                        FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
+                        FileHandle fileHandle = new FileHandle(iniData);
                         fileHandle.Load();
                         fileHandle.WriteLastStoreTime();
 

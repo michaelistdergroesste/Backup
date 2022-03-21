@@ -151,7 +151,7 @@ namespace BackupWork
         private void GetInterval()
         {
             IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
+            FileHandle fileHandle = new FileHandle(iniData);
             fileHandle.Load();
             this.interval = (long)iniData.Interval;
         }

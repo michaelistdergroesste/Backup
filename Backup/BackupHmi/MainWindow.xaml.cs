@@ -63,7 +63,7 @@ namespace BackupHmi
             labelSource = new System.Windows.Controls.Label[iniData.PathNumber];
             bindingSource = new System.Windows.Data.Binding[iniData.PathNumber];
 
-            fileHandle = new FileHandle(iniData, iniData.PathNumber);
+            fileHandle = new FileHandle(iniData);
             fileHandle.Load();
 
             CreateFolderBackup();

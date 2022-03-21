@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 
 namespace BackupLib
 {
-    public class IniData : Common, INotifyPropertyChanged
+    public class IniData : INotifyPropertyChanged
     {
         const int PATHNUMBER = 10;
+        /// <summary>
+        /// Die maximale Anzahl der Pfade, die gesichert wird. Dies entspricht der Anzahl der Pfade auf dem Main Screen
+        /// </summary>
+        private int pathNumber;
+
         /// <summary>
         /// Die maximale Anzahl der Quellpfade. Dies entspricht der Anzahl der Pfade auf dem Main Screen
         /// </summary>
