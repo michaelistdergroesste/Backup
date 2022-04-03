@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackupLib
 {
-    public class FileHandle
+    internal class FileHandle
     {
 
         /// <summary>
@@ -36,7 +36,9 @@ namespace BackupLib
 
 
 
-
+        /// <summary>
+        /// Speicher die Informationen was gesopeichert werden soll
+        /// </summary>
         public void Save()
         {
             DateTime localDate = DateTime.Now;
@@ -49,7 +51,9 @@ namespace BackupLib
             for (int i = 0; i < iniData.PathNumber; i++)
                 iniFile.IniWriteValue("sourceSave" + i.ToString(), iniData.SourcePath[i]);
         }
-
+        /// <summary>
+        /// Lade die Informationen was gespeichert werden soll.
+        /// </summary>
         public void Load()
         {
             iniData.DestPath = iniFile.IniReadValue("destPath");

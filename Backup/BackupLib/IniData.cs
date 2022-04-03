@@ -9,6 +9,8 @@ namespace BackupLib
 {
     public class IniData : INotifyPropertyChanged
     {
+        FileHandle fileHandle;
+        
         const int PATHNUMBER = 10;
         /// <summary>
         /// Die maximale Anzahl der Pfade, die gesichert wird. Dies entspricht der Anzahl der Pfade auf dem Main Screen
@@ -67,6 +69,9 @@ namespace BackupLib
 
         public IniData()
         {
+            fileHandle = new FileHandle(this);
+
+
             this.pathNumber = PATHNUMBER;
             sourcePath = new string[pathNumber];
             isSomeInSourcePath = new bool[pathNumber];
@@ -104,7 +109,14 @@ namespace BackupLib
             }
         }
 
+        /// <summary>
+        /// die Anzahl der Dateien, die Behalten werden soll
+        /// </summary>
         public int numberOfGenerations;
+
+        /// <summary>
+        /// die Anzahl der Dateien, die Behalten werden soll
+        /// </summary>
         public int NumberOfGenerations
         {
             get { return numberOfGenerations; }
@@ -134,6 +146,16 @@ namespace BackupLib
                 interval = value;
                 OnPropertyChanged(nameof(Interval));
             }
+        }
+
+        public void Load()
+        {
+            fileHandle.Load();
+        }
+
+        public void Save()
+        {
+            fileHandle.Save();
         }
 
         /// <summary>

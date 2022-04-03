@@ -24,8 +24,19 @@ namespace BackupLib
         /// </summary>
         int oldPercent;
 
+        /// <summary>
+        /// die Anzahl der gültigen Verzeichniseinträge = die Anzahl der Jobs
+        /// </summary>
+        int numberOfJobs = 0;
+
         // declaring an event using built-in EventHandler
-        public event EventHandler Change;
+        //public event EventHandler Change;
+
+        public delegate void delChange(int e);
+        public event delChange Change;
+
+        BackupFile backupFile;
+        
 
         public bool DoJob
         {
@@ -37,9 +48,19 @@ namespace BackupLib
 
         public DoWork()
         {
+            this.iniData = new IniData();
+            FileHandle fileHandle = new FileHandle(iniData);
+            fileHandle.Load();
+            fileHandle.WriteLastStoreTime();
+
+            backupFile = new BackupFile(iniData.destPath);
+            backupFile.Change += doBackupChange; // register with an event
+
             backupThread = new Thread(backup);
             backupThread.Start();
         }
+
+
 
         public int GetPercent()
         {
@@ -53,7 +74,8 @@ namespace BackupLib
                 retVal = 100;
             else 
             {
-                double dRetVal = ((double)jobCounter + 1.0) / (double)iniData.PathNumber * 100.0;
+                double divident = (double)jobCounter / 6.0 + 1.0;
+                double dRetVal = divident / (double)iniData.PathNumber * 100.0;
                 retVal = (int)dRetVal;                
             }
             return retVal;
@@ -70,22 +92,26 @@ namespace BackupLib
                 {
                     if (doJob)
                     {
-                        this.iniData = new IniData();
-                        FileHandle fileHandle = new FileHandle(iniData);
-                        fileHandle.Load();
-                        fileHandle.WriteLastStoreTime();
-
-                        BackupFile backupFile = new BackupFile(iniData.destPath);
-
                         for (jobCounter = 0; jobCounter < iniData.PathNumber; jobCounter++)
                         {
-                            OnChange(EventArgs.Empty); //No event data
+                            string sourcePath = iniData.SourcePath[jobCounter];
+                            if (backupFile.IsPathNameValid(sourcePath))
+                            {
+                                numberOfJobs++;
+                            }
+                        }
+                        for (jobCounter = 0; jobCounter < iniData.PathNumber; jobCounter++)
+                        {
+                            OnChange(jobCounter); //No event data
                             iniData.ActualHandle = "backup " + iniData.SourcePath[jobCounter];
-                            backupFile.ZipFolder(iniData.SourcePath[jobCounter]);
+                            backupFile.ZipFolder(iniData.SourcePath[jobCounter], iniData.NumberOfGenerations);
+
                         }
                         doJob = false;
-                        OnChange(EventArgs.Empty); //No event data
+                        OnChange(100); //No event data
                         
+
+
                     }
                 }
                 catch 
@@ -96,9 +122,18 @@ namespace BackupLib
             }
         }
 
-        private void OnChange(EventArgs e)
+        private void doBackupChange(int e)
         {
-            Change?.Invoke(this, e);
+            double val = ((double)jobCounter + (double)e / 100.0) / (double)numberOfJobs;
+            OnChange(val); 
+        }
+
+        private void OnChange(double e)
+        {
+            int valInPercent = (int)(e * 100.0);
+            if (valInPercent > 100)
+                valInPercent = 100;
+            Change?.Invoke(valInPercent);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace BackupHmi
         /// <summary>
         /// Dateihandler zum Speichern und lesen des INI - Files
         /// </summary>
-        FileHandle fileHandle;
+        //FileHandle fileHandle;
 
         DoWork doWork;
 
@@ -63,8 +63,7 @@ namespace BackupHmi
             labelSource = new System.Windows.Controls.Label[iniData.PathNumber];
             bindingSource = new System.Windows.Data.Binding[iniData.PathNumber];
 
-            fileHandle = new FileHandle(iniData);
-            fileHandle.Load();
+            this.iniData.Load();
 
             CreateFolderBackup();
             CreateFolderList();
@@ -80,6 +79,8 @@ namespace BackupHmi
             doWork = new DoWork();
             doWork.Change += doWorkChange; // register with an event
 
+            //doWork.GibTextZurueck += DoWorkGibTextZurueck;
+
             // initialisiere die Prozess bar.
             UpdateProcessBar();
 
@@ -88,6 +89,10 @@ namespace BackupHmi
 
         }
 
+        private void DoWorkGibTextZurueck(string ausgabe)
+        {
+            System.Windows.MessageBox.Show(ausgabe);
+        }
 
         private void doWorkChange(object? sender, EventArgs e)
         {
@@ -380,7 +385,7 @@ namespace BackupHmi
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            this.fileHandle.Save();
+            this.iniData.Save();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -392,7 +397,7 @@ namespace BackupHmi
                 MessageBoxButton buttons = MessageBoxButton.YesNo;
                 var result = System.Windows.MessageBox.Show(caption, message, buttons);
                 if (result == MessageBoxResult.Yes)
-                    this.fileHandle.Save();
+                    this.iniData.Save();
             }
         }
 

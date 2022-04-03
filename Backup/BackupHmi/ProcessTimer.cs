@@ -25,42 +25,42 @@ namespace BackupHmi
 
         }
 
-        public void Backup()
-        {
-            try
-            {
-                IniData iniData = new IniData();
-                FileHandle fileHandle = new FileHandle(iniData);
-                fileHandle.Load();
-                BackupFile backupFile = new BackupFile(iniData.destPath);
+        //public void Backup()
+        //{
+        //    try
+        //    {
+        //        IniData iniData = new IniData();
+        //        FileHandle fileHandle = new FileHandle(iniData);
+        //        fileHandle.Load();
+        //        BackupFile backupFile = new BackupFile(iniData.destPath);
 
-                for (int i = 0; i < iniData.PathNumber; i++)
-                {
-                    fertig(0);
-                    if (iniData.SourcePath[i].Length > 10)
-                    {
-                        iniData.ActualHandle = "backup " + iniData.SourcePath[i];
-                        backupFile.ZipFolder(iniData.SourcePath[i]);
-                    }
+        //        for (int i = 0; i < iniData.PathNumber; i++)
+        //        {
+        //            fertig(0);
+        //            if (iniData.SourcePath[i].Length > 10)
+        //            {
+        //                iniData.ActualHandle = "backup " + iniData.SourcePath[i];
+        //                backupFile.ZipFolder(iniData.SourcePath[i]);
+        //            }
 
 
-                }
-            }
-            catch { }
+        //        }
+        //    }
+        //    catch { }
 
-            fertig(0);
-        }
+        //    fertig(0);
+        //}
 
-        public void Backup2(object str)
-        {
-            IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData);
-            fileHandle.Load();
-            BackupFile backupFile = new BackupFile(iniData.destPath);
-            string sourthPath = (string)str;
-            iniData.ActualHandle = "backup " + sourthPath;
-            backupFile.ZipFolder(sourthPath);
-        }
+        //public void Backup2(object str)
+        //{
+        //    IniData iniData = new IniData();
+        //    FileHandle fileHandle = new FileHandle(iniData);
+        //    fileHandle.Load();
+        //    BackupFile backupFile = new BackupFile(iniData.destPath);
+        //    string sourthPath = (string)str;
+        //    iniData.ActualHandle = "backup " + sourthPath;
+        //    backupFile.ZipFolder(sourthPath);
+        //}
 
     }
 }

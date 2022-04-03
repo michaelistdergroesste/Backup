@@ -51,10 +51,15 @@ namespace BackupWork
 
         }
 
-        private void doWorkChange(object? sender, EventArgs e)
+        private void doWorkChange(int e)
         {
-            UpdateProcessBar();
+            UpdateProcessBar(e);
         }
+
+        //private void doWorkChange(object? sender, EventArgs e)
+        //{
+        //    UpdateProcessBar();
+        //}
 
 
 
@@ -122,13 +127,13 @@ namespace BackupWork
         /// <summary>
         /// Thread um den Prozessbaklken upzudaten.
         /// </summary>
-        private void UpdateProcessBar()
+        private void UpdateProcessBar(int e)
         {
 
 
             try
             {
-                int percent = doWork.GetPercent();
+                int percent = e;
 
                 this.Invoke(new emptyFunction(delegate ()
                 {
@@ -151,8 +156,7 @@ namespace BackupWork
         private void GetInterval()
         {
             IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData);
-            fileHandle.Load();
+            iniData.Load();
             this.interval = (long)iniData.Interval;
         }
 
