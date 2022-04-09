@@ -56,11 +56,6 @@ namespace BackupWork
             UpdateProcessBar(e);
         }
 
-        //private void doWorkChange(object? sender, EventArgs e)
-        //{
-        //    UpdateProcessBar();
-        //}
-
 
 
         //remove the entire system menu:
@@ -215,10 +210,7 @@ namespace BackupWork
             this.Hide();
         }
 
-        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
-        {
-            this.Show();
-        }
+
         #endregion
 
 

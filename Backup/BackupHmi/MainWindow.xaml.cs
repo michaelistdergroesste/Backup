@@ -82,7 +82,7 @@ namespace BackupHmi
             //doWork.GibTextZurueck += DoWorkGibTextZurueck;
 
             // initialisiere die Prozess bar.
-            UpdateProcessBar();
+            UpdateProcessBar(0);
 
             changeSome = false;
 
@@ -94,16 +94,35 @@ namespace BackupHmi
             System.Windows.MessageBox.Show(ausgabe);
         }
 
-        private void doWorkChange(object? sender, EventArgs e)
+        private void doWorkChange(int e)
         {
-            Dispatcher.BeginInvoke(new Action(UpdateProcessBar));
+            UpdateProcessBar(e);
         }
 
 
-        private void UpdateProcessBar()
+        /// <summary>
+        /// Thread um den Prozessbaklken upzudaten.
+        /// </summary>
+        private void UpdateProcessBar(int e)
         {
-            int percent = doWork.GetPercent();
-            progressBarSuccess.Value = percent;
+            int percent = e;
+            try
+            {
+                //this.Invoke(new emptyFunction(delegate ()
+                //{
+                //this.BeginInvoke(new Action(progressBarSuccess.Value = percent));
+                Dispatcher.BeginInvoke(new Action(() => progressBarSuccess.Value = percent));
+
+
+                //}));
+                
+                // siehe https://www.tutorials.de/threads/c-thread-fehler-ich-habe-kein-zugriff-auf-ein-objekt.389039/
+
+            }
+            catch (Exception ex)
+            {
+                ;
+            }
         }
 
         #region crerateUserElements
