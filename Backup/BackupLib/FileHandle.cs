@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace BackupLib
 {
-    public class FileHandle : Common
+    internal class FileHandle
     {
-        /// <summary>
-        /// Der Pfad, wo die Daten abgelegt werden
-        /// </summary>
-        string currentDirectory;
+
         /// <summary>
         /// Hier stehen allle Daten drin die für das Backup gebraucht werden. Beispiel: Dateipfade, Anzahl Sicherungen, usw
         /// </summary>
@@ -25,12 +22,12 @@ namespace BackupLib
         /// </summary>
         /// <param name="iniData">die Klasse mit den Inidaten die geschrieben oder gelesen werden soll</param>
         /// <param name="pathNumber">die maximale Anzahl der Pfade die gesichert werden soll</param>
-        public FileHandle(IniData iniData, int pathNumber)
+        public FileHandle(IniData iniData)
         {
             this.iniData = iniData;
-            this.pathNumber = pathNumber;
+            //this.pathNumber = iniData.PathNumber;
 
-            currentDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string currentDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string filePath = currentDirectory + "\\backup.ini";
             iniFile = new IniFile(filePath);
 
@@ -39,7 +36,9 @@ namespace BackupLib
 
 
 
-
+        /// <summary>
+        /// Speicher die Informationen was gesopeichert werden soll
+        /// </summary>
         public void Save()
         {
             DateTime localDate = DateTime.Now;
@@ -49,24 +48,37 @@ namespace BackupLib
             iniFile.IniWriteValue("numberOfSavings", iniData.NumberOfGenerations);
             iniFile.IniWriteValue("Interval", iniData.Interval);
             iniFile.IniWriteValue("Probier", iniData.Probier);
-            for (int i = 0; i < pathNumber; i++)
+            for (int i = 0; i < iniData.PathNumber; i++)
                 iniFile.IniWriteValue("sourceSave" + i.ToString(), iniData.SourcePath[i]);
         }
-
+        /// <summary>
+        /// Lade die Informationen was gespeichert werden soll.
+        /// </summary>
         public void Load()
         {
             iniData.DestPath = iniFile.IniReadValue("destPath");
             int number;
             iniFile.IniReadValue("numberOfSavings", out number);
             iniData.NumberOfGenerations = number;
-            string[] sourcePath = new string[this.pathNumber];
-            for (int i = 0; i < this.pathNumber; i++)
+            string[] sourcePath = new string[iniData.PathNumber];
+            for (int i = 0; i < iniData.PathNumber; i++)
                 sourcePath[i] = iniFile.IniReadValue("sourceSave" + i.ToString());
             iniData.SourcePath = sourcePath;
             iniFile.IniReadValue("Interval", out number);
             iniData.Interval = number;
             iniFile.IniReadValue("Probier", out number);
             iniData.Probier = number;
+        }
+
+        /// <summary>
+        /// Schreibe die aktuelle Zeit um zu wissen, wann das letze Backup gemacht wurde.
+        /// </summary>
+        internal void WriteLastStoreTime()
+        {
+            DateTime localDate = DateTime.Now;
+            long timeInSecounds = localDate.Ticks / 10000000;
+            iniFile.IniWriteValue("LastStore", timeInSecounds.ToString());
+
         }
     }
 }

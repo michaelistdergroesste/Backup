@@ -7,9 +7,16 @@ using System.Threading.Tasks;
 
 namespace BackupLib
 {
-    public class IniData : Common, INotifyPropertyChanged
+    public class IniData : INotifyPropertyChanged
     {
+        FileHandle fileHandle;
+        
         const int PATHNUMBER = 10;
+        /// <summary>
+        /// Die maximale Anzahl der Pfade, die gesichert wird. Dies entspricht der Anzahl der Pfade auf dem Main Screen
+        /// </summary>
+        private int pathNumber;
+
         /// <summary>
         /// Die maximale Anzahl der Quellpfade. Dies entspricht der Anzahl der Pfade auf dem Main Screen
         /// </summary>
@@ -62,6 +69,9 @@ namespace BackupLib
 
         public IniData()
         {
+            fileHandle = new FileHandle(this);
+
+
             this.pathNumber = PATHNUMBER;
             sourcePath = new string[pathNumber];
             isSomeInSourcePath = new bool[pathNumber];
@@ -99,7 +109,14 @@ namespace BackupLib
             }
         }
 
+        /// <summary>
+        /// die Anzahl der Dateien, die Behalten werden soll
+        /// </summary>
         public int numberOfGenerations;
+
+        /// <summary>
+        /// die Anzahl der Dateien, die Behalten werden soll
+        /// </summary>
         public int NumberOfGenerations
         {
             get { return numberOfGenerations; }
@@ -127,13 +144,18 @@ namespace BackupLib
             set
             {
                 interval = value;
-                // mindestens einmal die Stunde
-                //if (interval < 3600) interval = 10;
-                //// maximal alle zwei Wochen
-                //if (interval > 1209600) interval = 1209600;
-                //OnPropertyChanged(nameof(interval));
                 OnPropertyChanged(nameof(Interval));
             }
+        }
+
+        public void Load()
+        {
+            fileHandle.Load();
+        }
+
+        public void Save()
+        {
+            fileHandle.Save();
         }
 
         /// <summary>

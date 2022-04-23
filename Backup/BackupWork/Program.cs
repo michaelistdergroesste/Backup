@@ -2,6 +2,9 @@ namespace BackupWork
 {
     internal static class Program
     {
+
+
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -9,7 +12,11 @@ namespace BackupWork
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Form1 frm = new Form1();   //einfach nur Form1 initalisieren und dann
+            //Application.Run(new Form1());
+            Application.Run();
         }
     }
 }

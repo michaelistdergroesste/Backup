@@ -4,14 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>True</UseWindowsForms>
-    <ApplicationIcon>backup.ico</ApplicationIcon>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="backup.ico" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BackupLib\BackupLib.csproj" />

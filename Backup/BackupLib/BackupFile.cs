@@ -15,6 +15,10 @@ namespace BackupLib
         /// </summary>
         string destPath;
 
+        // declaring an event using built-in EventHandler
+        public delegate void delChange(int e);
+        public event delChange Change;
+
         /// <summary>
         /// Hole eine Liste mit allen Namen, die zu dem Parameter source passen
         /// </summary>
@@ -155,33 +159,57 @@ namespace BackupLib
                 }
             }
         }
-
-        public void ZipFolder(string source)
+        public bool IsPathNameValid(string source)
         {
-            if (source.Length > 5)
+            try
             {
+                if (source == null)
+                    return false;
+                else if (source.Length < 5)
+                    return false;
+                else
+                    return true;
+            }
+            catch
+            { return false; }
 
+        }
+        /// <summary>
+        /// Kopiere das zu sichernde Verzeichnis
+        /// Zippe das Verzeichnis 
+        /// Lösche das soeben kopierte Verzeichnis
+        /// Lösche die alten Backupas
+        /// </summary>
+        /// <param name="source">das zu sichernde Verzeichnis</param>
+        /// <param name="leave"></param>
+        public void ZipFolder(string source, int leave)
+        {
+            if (IsPathNameValid(source))
+            {
 
                 try
                 {
                     string[] dirs;
                     GetListOfAllFiles(source, out dirs);
+                    OnChange(17); //No event data
                     string dest;
                     CreateFileName(source, out dest);
+                    OnChange(33); //No event data
                     // Copy from the current directory, include subdirectories.
                     DirectoryCopy(source, dest);
+                    OnChange(49); //No event data
                     // Mache ein Zip File vom soeben kopierten Verzeichnis
                     ZipFile.CreateFromDirectory(dest, dest + ".zip");
+                    OnChange(64); //No event data
                     // Loesche dassoeben kopierten Verzeichnis nachdem es gezippt wurde
                     DeleteDir(dest);
+                    OnChange(82); //No event data
                     // Lösche alle alten *.zip - Files
-                    DeleteFiles(dirs, 3);
+                    DeleteFiles(dirs, leave);
+                    OnChange(100); //No event data
                 }
                 catch (Exception ex)
                 { }
-
-
-
 
             }
 
@@ -191,6 +219,11 @@ namespace BackupLib
         public BackupFile(string destPath)
         {
             this.destPath = destPath;
+        }
+
+        private void OnChange(int number)
+        {
+            Change?.Invoke(number);
         }
     }
 }

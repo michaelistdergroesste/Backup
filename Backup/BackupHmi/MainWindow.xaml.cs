@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using BackupLib;
+using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using BackupLib;
 using System.Windows.Forms;
+using System.Windows.Input;
+
 
 namespace BackupHmi
 {
@@ -29,7 +20,7 @@ namespace BackupHmi
         const int destinationTag = -1;
 
 
-        const int borderRight = 90;
+        const int borderRight = 130;
         const int borderHight = 34;
         /// <summary>
         /// Die Texte im Mainpanel die vor den Quell - Pfaden stehen
@@ -50,19 +41,16 @@ namespace BackupHmi
         public IniData iniData { get; set; }
 
         /// <summary>
-        /// Dateihandler zum Speichern und lesen des INI - Files
-        /// </summary>
-        FileHandle fileHandle;
-
-        /// <summary>
-        /// True, wenn jemand auf einen der Knoepfe gedrückt hat. In diesem Fall wird beim Beenden gefragt, ob die Önderungen gespeiuchert werden sollen.
+        /// True wenn etwas geaendert wurde. Dann wird gefragt, ob gespeichert werden soll.
         /// </summary>
         bool changeSome = false;
 
+        /// <summary>
+        /// Dateihandler zum Speichern und lesen des INI - Files
+        /// </summary>
+        //FileHandle fileHandle;
 
-        Thread newThread;
-        Thread[] newThread2;
-        ProcessTimer w;
+        DoWork doWork;
 
 
         public MainWindow()
@@ -75,39 +63,67 @@ namespace BackupHmi
             labelSource = new System.Windows.Controls.Label[iniData.PathNumber];
             bindingSource = new System.Windows.Data.Binding[iniData.PathNumber];
 
-            fileHandle = new FileHandle(iniData, iniData.PathNumber);
-            fileHandle.Load();
+            this.iniData.Load();
 
             CreateFolderBackup();
             CreateFolderList();
             CreateBorderSettings();
 
 
+
+
             this.DataContext = iniData;
 
             iniData.ActualHandle = "Sichern von Daten ";
 
-            progressBar.Value = 0;
-            w = new ProcessTimer();
-            w.fertig += new ProcessTimer.berechnungFertig(DoSome);
+            doWork = new DoWork();
+            doWork.Change += doWorkChange; // register with an event
+
+            //doWork.GibTextZurueck += DoWorkGibTextZurueck;
+
+            // initialisiere die Prozess bar.
+            UpdateProcessBar(0);
+
+            changeSome = false;
 
 
         }
 
-        private void IncreaseProcessBar()
+        private void DoWorkGibTextZurueck(string ausgabe)
         {
-            progressBar.Value += 20;
-            if (progressBar.Value >= 100)
-                buttonStart.IsEnabled = true;
+            System.Windows.MessageBox.Show(ausgabe);
         }
 
-        private void DoSome(int e)
+        private void doWorkChange(int e)
         {
-            Dispatcher.BeginInvoke(new Action(IncreaseProcessBar));
+            UpdateProcessBar(e);
         }
 
 
+        /// <summary>
+        /// Thread um den Prozessbaklken upzudaten.
+        /// </summary>
+        private void UpdateProcessBar(int e)
+        {
+            int percent = e;
+            try
+            {
+                //this.Invoke(new emptyFunction(delegate ()
+                //{
+                //this.BeginInvoke(new Action(progressBarSuccess.Value = percent));
+                Dispatcher.BeginInvoke(new Action(() => progressBarSuccess.Value = percent));
 
+
+                //}));
+                
+                // siehe https://www.tutorials.de/threads/c-thread-fehler-ich-habe-kein-zugriff-auf-ein-objekt.389039/
+
+            }
+            catch (Exception ex)
+            {
+                ;
+            }
+        }
 
         #region crerateUserElements
 
@@ -166,9 +182,11 @@ namespace BackupHmi
 
         System.Windows.Controls.Label CreateLabel(int tag)
         {
-            var label = new System.Windows.Controls.Label();
-            label.Tag = tag;
-            label.Content = "Verzeichnis";
+            var label = new System.Windows.Controls.Label
+            {
+                Tag = tag,
+                Content = "Verzeichnis"
+            };
 
             return label;
         }
@@ -209,7 +227,7 @@ namespace BackupHmi
             button.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
             button.VerticalAlignment = System.Windows.VerticalAlignment.Top;
             button.Width = 29;
-            button.Margin = new Thickness(4, top, 44, 0);
+            button.Margin = new Thickness(4, top, borderRight - 46, 0);
             button.Click += new System.Windows.RoutedEventHandler(ButtonCreateFolder_Click);
 
             return button;
@@ -227,14 +245,17 @@ namespace BackupHmi
             bool isSelected = false;
             isSelected = iniData.SourcePath[number].Length > 0;
 
-            var button = new System.Windows.Controls.Button();
-            button.Tag = tag;
-            button.Content = "X";
-            button.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-            button.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-            button.IsEnabled = true;
-            button.Width = 29;
-            button.Margin = new Thickness(34, top, 4, 0);
+            var button = new System.Windows.Controls.Button
+            {
+                Tag = tag,
+                Content = "X",
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+                //HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+                IsEnabled = true,
+                Width = 29,
+                Margin = new Thickness(34, top, borderRight - 86, 0)
+            };
             button.Click += new System.Windows.RoutedEventHandler(ButtonDeleteFolder_Click);
             string pathName = "IsSomeInSourcePath" + number.ToString();
             var binding = new System.Windows.Data.Binding(pathName);
@@ -383,7 +404,7 @@ namespace BackupHmi
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            this.fileHandle.Save();
+            this.iniData.Save();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -395,56 +416,24 @@ namespace BackupHmi
                 MessageBoxButton buttons = MessageBoxButton.YesNo;
                 var result = System.Windows.MessageBox.Show(caption, message, buttons);
                 if (result == MessageBoxResult.Yes)
-                    this.fileHandle.Save();
+                    this.iniData.Save();
             }
         }
 
 
         private void buttonStart_Click(object sender, RoutedEventArgs e)
         {
-            buttonStart.IsEnabled = false;
-            progressBar.Value = 0;
-            for (int i = 0; i < iniData.PathNumber; i++)
-                newThread = new Thread(w.Backup);
-            newThread.Start();
+            Backup();
 
         }
-
-
-
         private void Backup()
         {
-            IniData iniData = new IniData();
-            FileHandle fileHandle = new FileHandle(iniData, iniData.PathNumber);
-            fileHandle.Load();
-            BackupFile backupFile = new BackupFile(iniData.destPath);
-
-            for (int i = 0; i < iniData.PathNumber; i++)
-            {
-                if (iniData.SourcePath[i].Length > 10)
-                {
-                    iniData.ActualHandle = "backup " + iniData.SourcePath[i];
-                    backupFile.ZipFolder(iniData.SourcePath[i]);
-                }
-
-            }
+            doWork.DoJob = true;
         }
 
-        private void ComboInterval_Copy_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // Merken, dass auf dem Knopf gedrückt hat.
-            changeSome = true;
-        }
 
-        private void ComboInterval_Copy_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        private void ComboInterval_Copy_GotFocus(object sender, RoutedEventArgs e)
         {
-            // Merken, dass auf dem Knopf gedrückt hat.
-            changeSome = true;
-        }
-
-        private void ComboInterval_Copy_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            // Merken, dass auf dem Knopf gedrückt hat.
             changeSome = true;
         }
     }
