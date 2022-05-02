@@ -32,7 +32,6 @@ namespace BackupLib
             iniFile = new IniFile(filePath);
 
 
-
         }
 
 
@@ -48,7 +47,7 @@ namespace BackupLib
             iniFile.IniWriteValue("destPath", iniData.DestPath);
             iniFile.IniWriteValue("numberOfSavings", iniData.NumberOfGenerations);
             iniFile.IniWriteValue("Interval", iniData.Interval);
-            iniFile.IniWriteValue("LastStore", iniData.LastStore);
+            iniFile.IniWriteValue("Probier", iniData.Probier);
             for (int i = 0; i < iniData.PathNumber; i++)
                 iniFile.IniWriteValue("sourceSave" + i.ToString(), iniData.SourcePath[i]);
         }
@@ -67,10 +66,19 @@ namespace BackupLib
             iniData.SourcePath = sourcePath;
             iniFile.IniReadValue("Interval", out number);
             iniData.Interval = number;
-            iniFile.IniReadValue("LastStore", out number);
-            iniData.LastStore = number;
+            iniFile.IniReadValue("Probier", out number);
+            iniData.Probier = number;
         }
 
+        /// <summary>
+        /// Schreibe die aktuelle Zeit um zu wissen, wann das letze Backup gemacht wurde.
+        /// </summary>
+        internal void WriteLastStoreTime()
+        {
+            DateTime localDate = DateTime.Now;
+            long timeInSecounds = localDate.Ticks / 10000000;
+            iniFile.IniWriteValue("LastStore", timeInSecounds.ToString());
 
+        }
     }
 }

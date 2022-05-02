@@ -31,8 +31,6 @@ namespace BackupWork
 
         DoWork doWork;
 
-        IniData iniData;
-
         string applicationPath;
 
 
@@ -41,11 +39,8 @@ namespace BackupWork
         {
             InitializeComponent();
 
-            iniData = new IniData();
-            iniData.Load();
-            doWork = new DoWork(iniData);
 
-
+            doWork = new DoWork();
 
 
             applicationPath = GetApplicationsPath();
@@ -108,15 +103,18 @@ namespace BackupWork
             while (true)
             {
                 Thread.Sleep(fiveMinutes);
-                int currentTime = iniData.GetCurrentTime();
-                int intervall = iniData.Interval;
-                int lastStore = iniData.LastStore;
-                int difference = currentTime - lastStore;
-                if (difference > intervall)
+                GetInterval();
+                LoadLastStoreTime();
+                long timeInSecounds = GetCurrentTime();
+                long diff = timeInSecounds - this.lastStore;
+
+                string text = "diff = " + diff.ToString();
+
+                if (diff > this.interval)
                 {
                     Backup();
                 }
-            
+                
 
             }
         }
@@ -147,7 +145,15 @@ namespace BackupWork
 
         }
 
-
+        /// <summary>
+        /// Abfragen, wie oft das Backup gemacht werden muss
+        /// </summary>
+        private void GetInterval()
+        {
+            IniData iniData = new IniData();
+            iniData.Load();
+            this.interval = (long)iniData.Interval;
+        }
 
 
 
@@ -165,7 +171,7 @@ namespace BackupWork
         private string OwnIniFileName()
         {
             string currentDirectory = GetApplicationsPath();
-            return (currentDirectory + "\\" + "ownbackup.ini");
+            return (currentDirectory + "\\" + doWork.IniFileName);
         }
 
         public string GetApplicationsPath()

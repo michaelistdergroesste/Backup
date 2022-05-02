@@ -161,39 +161,18 @@ namespace BackupLib
         /// <summary>
         /// Interval der Sicherungen in Sekunden
         /// </summary>
-        private int lastStore;
+        public int probier;
         /// <summary>
         /// Interval der Sicherungen in Sekunden
         /// </summary>
-        public int LastStore
+        public int Probier
         {
-            get 
-            { 
-                return lastStore; 
-            }
+            get { return probier; }
             set
             {
-                lastStore = value;
+                probier = value;
                 OnPropertyChanged(nameof(Interval));
             }
-        }
-        /// <summary>
-        /// Schreibe aktuellen Zeitpunkt auf um nachher zu wissen, wann das letze mal gesichert wurde.
-        /// </summary>
-        public void SetLastStore()
-        {
-            lastStore = GetCurrentTime();
-        }
-        /// <summary>
-        /// Gibt die aktuelle Zeit in Sekunden seit dem Jahr 2000 an.
-        /// </summary>
-        /// <returns></returns>
-        public int GetCurrentTime()
-        {
-            long secondsSinceYear2000 = 63082281600;
-            DateTime localDate = DateTime.Now;
-            long currentTimeAsLong = localDate.Ticks / 10000000 - secondsSinceYear2000;
-            return (int)currentTimeAsLong;
         }
         #region SourcePath
         public string SourcePath0

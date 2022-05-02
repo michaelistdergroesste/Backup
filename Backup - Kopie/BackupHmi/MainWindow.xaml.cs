@@ -76,7 +76,7 @@ namespace BackupHmi
 
             iniData.ActualHandle = "Sichern von Daten ";
 
-            doWork = new DoWork(this.iniData);
+            doWork = new DoWork();
             doWork.Change += doWorkChange; // register with an event
 
             //doWork.GibTextZurueck += DoWorkGibTextZurueck;
@@ -86,18 +86,7 @@ namespace BackupHmi
 
             changeSome = false;
 
-            //UpdateScreen();
 
-
-        }
-
-        private void UpdateScreen()
-        {
-            int interval = iniData.Interval;
-            if ((interval > 0) && (interval < 1000000))
-                ComboInterval_Copy.SelectedIndex = 1;
-            if ((interval > 1000000) && (interval < 2000000))
-                ComboInterval_Copy.SelectedIndex = 2;
         }
 
         private void DoWorkGibTextZurueck(string ausgabe)
@@ -105,7 +94,6 @@ namespace BackupHmi
             System.Windows.MessageBox.Show(ausgabe);
         }
 
-        #region UpdateProcessBar
         private void doWorkChange(int e)
         {
             UpdateProcessBar(e);
@@ -136,8 +124,6 @@ namespace BackupHmi
                 ;
             }
         }
-
-        #endregion UpdateProcessBar
 
         #region crerateUserElements
 
@@ -432,7 +418,6 @@ namespace BackupHmi
                 if (result == MessageBoxResult.Yes)
                     this.iniData.Save();
             }
-            Environment.Exit(0);
         }
 
 
@@ -450,11 +435,6 @@ namespace BackupHmi
         private void ComboInterval_Copy_GotFocus(object sender, RoutedEventArgs e)
         {
             changeSome = true;
-        }
-
-        private void ComboInterval_Copy_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
     }
 }

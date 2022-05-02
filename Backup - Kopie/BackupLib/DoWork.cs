@@ -37,6 +37,13 @@ namespace BackupLib
 
         BackupFile backupFile;
 
+        public string iniFileName = "ownbackup.ini";
+        public string IniFileName
+        {
+            get { return iniFileName; }
+            set { iniFileName = value; }
+        }
+
 
         public bool DoJob
         {
@@ -46,19 +53,18 @@ namespace BackupLib
 
         
 
-
-
-        public DoWork(IniData iniData)
+        public DoWork()
         {
-            this.iniData = iniData;
+            this.iniData = new IniData();
+            FileHandle fileHandle = new FileHandle(iniData);
+            fileHandle.Load();
+            fileHandle.WriteLastStoreTime();
 
             backupFile = new BackupFile(iniData.destPath);
             backupFile.Change += doBackupChange; // register with an event
 
             backupThread = new Thread(backup);
             backupThread.Start();
-
-            SqlHandle sqlHandle = new SqlHandle(iniData);
         }
 
 
@@ -81,7 +87,6 @@ namespace BackupLib
             }
             return retVal;
         }
-
         /// <summary>
         /// Der Tread, der das Backup macht.
         /// </summary>
@@ -92,10 +97,8 @@ namespace BackupLib
             {
                 try
                 {
-                    
                     if (doJob)
                     {
-                        iniData.SetLastStore();
                         for (jobCounter = 0; jobCounter < iniData.PathNumber; jobCounter++)
                         {
                             string sourcePath = iniData.SourcePath[jobCounter];
